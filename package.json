@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/yashiro1899/healthcheck/issues"
   },
-  "homepage": "https://github.com/yashiro1899/healthcheck"
+  "homepage": "https://github.com/yashiro1899/healthcheck",
+  "dependencies": {
+    "es6-promise": "^1.0.0"
+  }
 }
