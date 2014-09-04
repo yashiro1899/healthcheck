@@ -11,5 +11,13 @@
     "check"
   ],
   "author": "Ice White",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yashiro1899/healthcheck.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yashiro1899/healthcheck/issues"
+  },
+  "homepage": "https://github.com/yashiro1899/healthcheck"
 }
