@@ -28,15 +28,23 @@ var HEALTH_STATE = [
 var healthchecks_arr = [];
 
 exports.init = function(opts) {
-    if (opts && opts.peers && opts.peers.length > 0) {
+    if (opts && opts.servers && opts.servers.length > 0) {
         if (opts.delay === undefined) opts.delay = 10000;
         if (opts.failcount === undefined) opts.failcount = 2;
         if (opts.timeout === undefined) opts.timeout = 2000;
     }
 };
 
-exports.healthcheck_add_peer = function(peer) {
+exports.healthcheck_add_peer = function(peer, opts) {
 };
 
 exports.healthcheck_is_down = function(index) {
 };
+
+function check() {
+    var promises = healthchecks_arr.map(function(hc) {
+        return (new Promise(function(resolve, reject) {
+        })).then(function(result) {
+        });
+    });
+}
