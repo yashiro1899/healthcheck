@@ -1,4 +1,6 @@
 var Promise = require('es6-promise').Promise;
+var http = require("http");
+var https = require("https");
 
 var HEALTH_STATE = [
     "OK",                                      // HEALTH_OK
@@ -13,14 +15,21 @@ var HEALTH_STATE = [
     "Connection closed early"                  // HEALTH_EARLY_CLOSE
 ];
 
-var healthcheck_status_shm = {
-    owner: process.pid,
-    action_time: null,
-    concurrent: 0,
-    since: null,
-    last_down: true,
-    down_code: 0,
-    down: true
-};
+
+// var healthcheck_status_shm = {
+//     action_time: null,
+//     concurrent: 0,
+//     down: false,
+//     down_code: 0,
+//     last_down: true,
+//     owner: process.pid,
+//     since: null
+// };
 exports.init = function(opts) {
+};
+
+exports.healthcheck_add_peer = function(peer) {
+};
+
+exports.healthcheck_is_down = function() {
 };
