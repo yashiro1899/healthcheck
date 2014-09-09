@@ -39,6 +39,7 @@ exports.init = function(opts) {
         delete opts.servers;
         this.opts = opts;
         check();
+        setInterval(check, opts.delay);
     }
 };
 
@@ -58,7 +59,6 @@ exports.status = function() {
 function check() {
     var servers = Object.keys(healthchecks_arr);
     var opts = exports.opts;
-    var ended = false;
 
     servers.forEach(function(s) {
         var time = new Date();
@@ -73,6 +73,7 @@ function check() {
             path: (opts.send || "/")
         });
         u = url.parse(u);
+        var ended = false;
 
         var library = opts.https ? https : http;
         var request = library.get({
@@ -89,6 +90,7 @@ function check() {
                 response.on("end", function() {
                     if (ended) return null;
                     if (opts.expected) {
+                        console.log(result.toString(), opts.expected);
                         if (opts.expected == result.toString()) {
                             hc.last_status = HEALTH_STATE[0];
                             hc.failcount = 0;
@@ -111,13 +113,13 @@ function check() {
             }
         });
 
-        request.connection.setTimeout(opts.timeout, function() {
-            ended = true;
-            request.abort();
-            hc.last_status = HEALTH_STATE[7];
-            hc.failcount += 1;
-            if (hc.failcount > opts.failcount) hc.down = true;
-        });
+        // request.connection.setTimeout(opts.timeout, function() {
+        //     ended = true;
+        //     request.abort();
+        //     hc.last_status = HEALTH_STATE[7];
+        //     hc.failcount += 1;
+        //     if (hc.failcount > opts.failcount) hc.down = true;
+        // });
 
         request.on('error', function(error) {
             ended = true;
@@ -126,4 +128,5 @@ function check() {
             if (hc.failcount > opts.failcount) hc.down = true;
         });
     });
+    if (typeof opts.logger === "function") opts.logger(healthchecks_arr);
 }
