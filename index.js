@@ -88,10 +88,26 @@ function check() {
                 });
                 response.on("end", function() {
                     if (ended) return null;
-                    // TODO:
+                    if (opts.expected) {
+                        if (opts.expected == result.toString()) {
+                            hc.last_status = HEALTH_STATE[0];
+                            hc.failcount = 0;
+                            hc.down = false;
+                        } else {
+                            hc.last_status = HEALTH_STATE[3];
+                            hc.failcount += 1;
+                            if (hc.failcount > opts.failcount) hc.down = true;
+                        }
+                    } else {
+                        hc.last_status = HEALTH_STATE[0];
+                        hc.failcount = 0;
+                        hc.down = false;
+                    }
                 });
             } else {
-                // TODO:
+                hc.last_status = HEALTH_STATE[6];
+                hc.failcount += 1;
+                if (hc.failcount > opts.failcount) hc.down = true;
             }
         });
 
