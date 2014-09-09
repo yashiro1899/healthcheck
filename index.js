@@ -3,16 +3,16 @@ var https = require("https");
 var url = require("url");
 
 var HEALTH_STATE = [
-    "OK",                                      // HEALTH_OK
-    "Malformed header",                        // HEALTH_BAD_HEADER
-    "Bad status line.  Maybe not HTTP",        // HEALTH_BAD_STATUS
-    "Bad HTTP body contents",                  // HEALTH_BAD_BODY
-    "Internal error.  Bad healthcheck state",  // HEALTH_BAD_STATE
-    "Error reading contents.  Bad connection", // HEALTH_BAD_CONN
-    "Non 200 HTTP status code",                // HEALTH_BAD_CODE
-    "Healthcheck timed out",                   // HEALTH_TIMEOUT
-    "Contents could not fit read buffer",      // HEALTH_FULL_BUFFER
-    "Connection closed early"                  // HEALTH_EARLY_CLOSE
+    "OK",                                      // 0. HEALTH_OK
+    "Malformed header",                        // 1. HEALTH_BAD_HEADER
+    "Bad status line.  Maybe not HTTP",        // 2. HEALTH_BAD_STATUS
+    "Bad HTTP body contents",                  // 3. HEALTH_BAD_BODY
+    "Internal error.  Bad healthcheck state",  // 4. HEALTH_BAD_STATE
+    "Error reading contents.  Bad connection", // 5. HEALTH_BAD_CONN
+    "Non 200 HTTP status code",                // 6. HEALTH_BAD_CODE
+    "Healthcheck timed out",                   // 7. HEALTH_TIMEOUT
+    "Contents could not fit read buffer",      // 8. HEALTH_FULL_BUFFER
+    "Connection closed early"                  // 9. HEALTH_EARLY_CLOSE
 ];
 
 
@@ -29,8 +29,8 @@ exports.init = function(opts) {
                 action_time: null,
                 concurrent: 0,
                 down: false,
-                down_code: 0,
                 failcount: 0,
+                last_status: "",
                 owner: process.pid,
                 since: null
             };
@@ -61,6 +61,12 @@ function check() {
     var ended = false;
 
     servers.forEach(function(s) {
+        var time = new Date();
+        var hc = healthchecks_arr[s];
+        if (!hc.since) hc.since = time;
+        hc.action_time = time;
+        hc.concurrent += 1;
+
         var u = url.format({
             protocol: (opts.https ? 'https:' : 'http:'),
             host: s,
@@ -92,18 +98,16 @@ function check() {
         request.connection.setTimeout(opts.timeout, function() {
             ended = true;
             request.abort();
-            // TODO:
+            hc.last_status = HEALTH_STATE[7];
+            hc.failcount += 1;
+            if (hc.failcount > opts.failcount) hc.down = true;
         });
 
         request.on('error', function(error) {
             ended = true;
-            // TODO:
+            hc.last_status = error.message;
+            hc.failcount += 1;
+            if (hc.failcount > opts.failcount) hc.down = true;
         });
-
-        var time = new Date();
-        var hc = healthchecks_arr[s];
-        if (!hc.since) hc.since = time;
-        hc.action_time = time;
-        hc.concurrent += 1;
     });
 }
