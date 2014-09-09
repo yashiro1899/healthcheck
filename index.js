@@ -27,7 +27,7 @@ exports.init = function(opts) {
         opts.servers.forEach(function(s) {
             healthchecks_arr[s] = {
                 action_time: null,
-                concurrent: 0,
+                concurrent: -1,
                 down: false,
                 failcount: 0,
                 last_status: "",
@@ -90,7 +90,6 @@ function check() {
                 response.on("end", function() {
                     if (ended) return null;
                     if (opts.expected) {
-                        console.log(result.toString(), opts.expected);
                         if (opts.expected == result.toString()) {
                             hc.last_status = HEALTH_STATE[0];
                             hc.failcount = 0;
@@ -98,7 +97,7 @@ function check() {
                         } else {
                             hc.last_status = HEALTH_STATE[3];
                             hc.failcount += 1;
-                            if (hc.failcount > opts.failcount) hc.down = true;
+                            if (hc.failcount >= opts.failcount) hc.down = true;
                         }
                     } else {
                         hc.last_status = HEALTH_STATE[0];
@@ -109,7 +108,7 @@ function check() {
             } else {
                 hc.last_status = HEALTH_STATE[6];
                 hc.failcount += 1;
-                if (hc.failcount > opts.failcount) hc.down = true;
+                if (hc.failcount >= opts.failcount) hc.down = true;
             }
         });
 
@@ -120,7 +119,7 @@ function check() {
                 request.abort();
                 hc.last_status = HEALTH_STATE[7];
                 hc.failcount += 1;
-                if (hc.failcount > opts.failcount) hc.down = true;
+                if (hc.failcount >= opts.failcount) hc.down = true;
             });
         });
 
@@ -128,7 +127,7 @@ function check() {
             ended = true;
             hc.last_status = error.message;
             hc.failcount += 1;
-            if (hc.failcount > opts.failcount) hc.down = true;
+            if (hc.failcount >= opts.failcount) hc.down = true;
         });
     });
     if (typeof opts.logger === "function") opts.logger(healthchecks_arr);
