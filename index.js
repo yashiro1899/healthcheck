@@ -16,35 +16,49 @@ var HEALTH_STATE = [
 ];
 
 
-// var healthcheck_status_shm = {
-//     action_time: null,
-//     concurrent: 0,
-//     down: false,
-//     down_code: 0,
-//     last_down: true,
-//     owner: process.pid,
-//     since: null
-// };
-var healthchecks_arr = [];
+var healthchecks_arr = {};
 
 exports.init = function(opts) {
     if (opts && opts.servers && opts.servers.length > 0) {
         if (opts.delay === undefined) opts.delay = 10000;
         if (opts.failcount === undefined) opts.failcount = 2;
         if (opts.timeout === undefined) opts.timeout = 2000;
+
+        opts.servers.forEach(function(s) {
+            healthchecks_arr[s] = {
+                action_time: null,
+                concurrent: 0,
+                down: false,
+                down_code: 0,
+                failcount: 0,
+                owner: process.pid,
+                since: null
+            };
+        });
+
+        delete opts.servers;
+        this.opts = opts;
+    }
+
+    return null;
+};
+
+exports.is_down = function(name) {
+    var hc = healthchecks_arr[name];
+    if (hc) {
+        return hc.down;
+    } else {
+        return new Error("healthcheck: Invalid index to is_down: " + name);
     }
 };
 
-exports.healthcheck_add_peer = function(peer, opts) {
-};
-
-exports.healthcheck_is_down = function(index) {
+exports.status = function() {
+    return healthchecks_arr;
 };
 
 function check() {
-    var promises = healthchecks_arr.map(function(hc) {
-        return (new Promise(function(resolve, reject) {
-        })).then(function(result) {
-        });
+    var servers = Object.keys(healthchecks_arr);
+
+    servers.forEach(function(s) {
     });
 }
