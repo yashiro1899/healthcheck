@@ -28,11 +28,11 @@ var HEALTH_STATE = [
 var healthchecks_arr = [];
 
 exports.init = function(opts) {
-    var default_conf = {
-        delay     : 10000,
-        failcount : 2,
-        timeout   : 2000
-    };
+    if (opts && opts.peers && opts.peers.length > 0) {
+        if (opts.delay === undefined) opts.delay = 10000;
+        if (opts.failcount === undefined) opts.failcount = 2;
+        if (opts.timeout === undefined) opts.timeout = 2000;
+    }
 };
 
 exports.healthcheck_add_peer = function(peer) {
