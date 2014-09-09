@@ -1,6 +1,6 @@
-var Promise = require('es6-promise').Promise;
 var http = require("http");
 var https = require("https");
+var url = require("url");
 
 var HEALTH_STATE = [
     "OK",                                      // HEALTH_OK
@@ -38,9 +38,8 @@ exports.init = function(opts) {
 
         delete opts.servers;
         this.opts = opts;
+        check();
     }
-
-    return null;
 };
 
 exports.is_down = function(name) {
@@ -58,7 +57,53 @@ exports.status = function() {
 
 function check() {
     var servers = Object.keys(healthchecks_arr);
+    var opts = exports.opts;
+    var ended = false;
 
     servers.forEach(function(s) {
+        var u = url.format({
+            protocol: (opts.https ? 'https:' : 'http:'),
+            host: s,
+            path: (opts.send || "/")
+        });
+        u = url.parse(u);
+
+        var library = opts.https ? https : http;
+        var request = library.get({
+            host: u.hostname,
+            port: u.port,
+            agent: false,
+            path: u.pathname
+        }, function(response) {
+            var result = new Buffer('');
+            if (response.statusCode == 200) {
+                response.on("data", function(chunk) {
+                    result = Buffer.concat([result, chunk]);
+                });
+                response.on("end", function() {
+                    if (ended) return null;
+                    // TODO:
+                });
+            } else {
+                // TODO:
+            }
+        });
+
+        request.connection.setTimeout(opts.timeout, function() {
+            ended = true;
+            request.abort();
+            // TODO:
+        });
+
+        request.on('error', function(error) {
+            ended = true;
+            // TODO:
+        });
+
+        var time = new Date();
+        var hc = healthchecks_arr[s];
+        if (!hc.since) hc.since = time;
+        hc.action_time = time;
+        hc.concurrent += 1;
     });
 }
