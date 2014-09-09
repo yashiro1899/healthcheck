@@ -113,13 +113,16 @@ function check() {
             }
         });
 
-        // request.connection.setTimeout(opts.timeout, function() {
-        //     ended = true;
-        //     request.abort();
-        //     hc.last_status = HEALTH_STATE[7];
-        //     hc.failcount += 1;
-        //     if (hc.failcount > opts.failcount) hc.down = true;
-        // });
+        request.on('socket', function(socket) {
+            socket.setTimeout(opts.timeout);
+            socket.on('timeout', function() {
+                ended = true;
+                request.abort();
+                hc.last_status = HEALTH_STATE[7];
+                hc.failcount += 1;
+                if (hc.failcount > opts.failcount) hc.down = true;
+            });
+        });
 
         request.on('error', function(error) {
             ended = true;

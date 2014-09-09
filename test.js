@@ -9,5 +9,5 @@ healthcheck.init({
     ],
     delay: 2000,
     send: '/health.txt',
-    logger: console.log
+    // logger: console.log
 });
