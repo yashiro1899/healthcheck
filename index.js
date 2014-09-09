@@ -25,11 +25,18 @@ var HEALTH_STATE = [
 //     owner: process.pid,
 //     since: null
 // };
+var healthchecks_arr = [];
+
 exports.init = function(opts) {
+    var default_conf = {
+        delay     : 10000,
+        failcount : 2,
+        timeout   : 2000
+    };
 };
 
 exports.healthcheck_add_peer = function(peer) {
 };
 
-exports.healthcheck_is_down = function() {
+exports.healthcheck_is_down = function(index) {
 };
