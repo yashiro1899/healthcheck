@@ -5,8 +5,9 @@ var Table = require('cli-table');
 healthcheck.init({
     servers: [
         'user.qunar.com',
+        'localhost:3000'
     ],
-    https: true,
+    // https: true,
     delay: 2000,
     send: '/images/ugc/ucenter/login-logo.png',
     logger: function(list) {
