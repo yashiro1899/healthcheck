@@ -79,7 +79,7 @@ Example:
 * **owner**: Worker pid processing this healthcheck.
 * **action_time**: `Date` instance. Last time request was taken.
 * **concurrent**: Number of concurrent bad or good responses.
-* **since**: How long this server's been concurrently bad or good.
+* **since**: `Date` instance. How long this server's been concurrently bad or good.
 * **last_status**: Status of last finished check.
 * **down**: If true, the server is actually down.
 * **failcount**: Number of concurrent bad responses.
@@ -91,4 +91,4 @@ Return `true` if the given server has failed its healthcheck.
 
 Example:
 
-	healthcheck.is_down("localhost:3000");
+    healthcheck.is_down("localhost:3000");
