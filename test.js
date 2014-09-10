@@ -4,11 +4,11 @@ var Table = require('cli-table');
 
 healthcheck.init({
     servers: [
-        'www.google.com',
+        'user.qunar.com',
     ],
     https: true,
     delay: 2000,
-    send: '/',
+    send: '/passport/login.jsp',
     logger: function(list) {
         var table = new Table({
             head: ['name', 'owner pid', 'action time', 'concurrent', 'since', "status", 'is down?']

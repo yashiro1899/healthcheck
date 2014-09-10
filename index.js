@@ -75,7 +75,6 @@ function check() {
         var hc = healthchecks_arr[s];
         if (!hc.since) hc.since = time;
         hc.action_time = time;
-        hc.concurrent += 1;
 
         var u = url.format({
             protocol: (opts.https ? 'https:' : 'http:'),
@@ -114,13 +113,13 @@ function check() {
                         hc.failcount = 0;
                         hc.down = false;
                     }
-                    deferred.resolve(null);
+                    deferred.resolve(hc);
                 });
             } else {
                 hc.last_status = HEALTH_STATE[6];
                 hc.failcount += 1;
                 if (hc.failcount >= opts.failcount) hc.down = true;
-                deferred.resolve(null);
+                deferred.resolve(hc);
             }
         });
 
@@ -132,7 +131,7 @@ function check() {
                 hc.last_status = HEALTH_STATE[7];
                 hc.failcount += 1;
                 if (hc.failcount >= opts.failcount) hc.down = true;
-                deferred.resolve(null);
+                deferred.resolve(hc);
             });
         });
 
@@ -141,12 +140,15 @@ function check() {
             hc.last_status = error.message;
             hc.failcount += 1;
             if (hc.failcount >= opts.failcount) hc.down = true;
-            deferred.resolve(null);
+            deferred.resolve(hc);
         });
         return deferred.promise;
     });
 
     Promise.all(promises).then(function(result) {
+        result.forEach(function(hc) {
+            hc.concurrent += 1;
+        });
         if (typeof opts.logger === "function") opts.logger(healthchecks_arr);
     });
 }
