@@ -15,31 +15,37 @@ Options:
 * **https**: If `true`, `https` indicates that uses https to health check. Defaults to `false`.
 * **logger**: A function is invoked until every server finish in a healthcheck.
 
+Example:
 
+    var dateformat = require('dateformat');
+    var healthcheck = require("healthcheck");
+    var Table = require('cli-table');
 
-    	var dateformat = require('dateformat');
-    	var healthcheck = require("healthcheck");
-    	var Table = require('cli-table');
+    healthcheck.init({
+        servers: [
+            'localhost:3000',
+            'localhost:3001'
+        ],
+        delay: 5000,
+        timeout: 3000,
+        failcount: 1,
+        send: '/health.txt',
+        expected: 'I_AM_ALIVE',
+        https: true,
+        logger: function(list) {
+            var table = new Table({
+                head: ['name', 'owner pid', 'action time', 'concurrent', 'since', "status", 'is down?']
+            });
+            var servers = Object.keys(list);
 
-		healthcheck.init({
-        	servers: [
-            	'localhost:3000',
-            	'localhost:3001'
-        	],
-        	delay: 2000,
-        	send: '/health.txt',
-        	logger: function(list) {
-            	var table = new Table({
-                	head: ['name', 'owner pid', 'action time', 'concurrent', 'since', "status", 'is down?']
-            	});
-            	var servers = Object.keys(list);
+            servers.forEach(function(s) {
+                var hc = list[s];
+                var action_time = dateformat(hc.action_time, 'HH:MM:ss');
+                var since = dateformat(hc.since, 'HH:MM:ss');
+                table.push([s, hc.owner, action_time, hc.concurrent, since, hc.last_status, hc.down]);
+            });
+            console.log(table.toString());
+        }
+    });
 
-            	servers.forEach(function(s) {
-                	var hc = list[s];
-                	var action_time = dateformat(hc.action_time, 'HH:MM:ss');
-                	var since = dateformat(hc.since, 'HH:MM:ss');
-                	table.push([s, hc.owner, action_time, hc.concurrent, since, hc.last_status, hc.down]);
-            	});
-            	console.log(table.toString());
-        	}
-    	});
+## healthcheck.status
