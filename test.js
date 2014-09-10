@@ -8,7 +8,7 @@ healthcheck.init({
     ],
     https: true,
     delay: 2000,
-    send: '/passport/login.jsp',
+    send: '/images/ugc/ucenter/login-logo.png',
     logger: function(list) {
         var table = new Table({
             head: ['name', 'owner pid', 'action time', 'concurrent', 'since', "status", 'is down?']

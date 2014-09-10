@@ -79,7 +79,7 @@ function check() {
         var u = url.format({
             protocol: (opts.https ? 'https:' : 'http:'),
             host: s,
-            path: (opts.send || "/")
+            pathname: (opts.send || "/")
         });
         u = url.parse(u);
         var ended = false;
