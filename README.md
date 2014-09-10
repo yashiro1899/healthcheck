@@ -48,4 +48,47 @@ Example:
         }
     });
 
-## healthcheck.status
+
+## healthcheck.status()
+
+The `status()` method health status.
+
+Example:
+
+    {
+        'localhost:3000': {
+            action_time: Wed Sep 10 2014 15: 28: 20 GMT + 0800(CST),
+            concurrent: 1,
+            down: false,
+            failcount: 1,
+            last_status: 'connect ECONNREFUSED',
+            owner: 2300,
+            since: Wed Sep 10 2014 15: 28: 20 GMT + 0800(CST)
+        },
+        'localhost:3001': {
+            action_time: Wed Sep 10 2014 15: 28: 20 GMT + 0800(CST),
+            concurrent: 1,
+            down: false,
+            failcount: 1,
+            last_status: 'connect ECONNREFUSED',
+            owner: 2300,
+            since: Wed Sep 10 2014 15: 28: 20 GMT + 0800(CST)
+        }
+    }
+
+* **owner**: Worker pid processing this healthcheck.
+* **action_time**: `Date` instance. Last time request was taken.
+* **concurrent**: Number of concurrent bad or good responses.
+* **since**: How long this server's been concurrently bad or good.
+* **last_status**: Status of last finished check.
+* **down**: If true, the server is actually down.
+* **failcount**: Number of concurrent bad responses.
+
+
+## healthcheck.is_down(name)
+
+Return `true` if the given server has failed its healthcheck.
+
+Example:
+
+	healthcheck.is_down("localhost:3000");
