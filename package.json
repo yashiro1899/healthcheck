@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/yashiro1899/healthcheck",
   "dependencies": {
+    "es6-promise": "^1.0.0"
   },
   "devDependencies": {
     "cli-table": "^0.3.0",

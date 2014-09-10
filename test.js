@@ -4,11 +4,9 @@ var Table = require('cli-table');
 
 healthcheck.init({
     servers: [
-        'localhost:11114',
-        'localhost:11115',
-        'localhost:11116',
-        'localhost:11117'
+        'www.google.com',
     ],
+    https: true,
     delay: 2000,
     send: '/',
     logger: function(list) {

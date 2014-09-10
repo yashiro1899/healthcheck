@@ -1,6 +1,15 @@
 var http = require("http");
 var https = require("https");
 var url = require("url");
+var Promise = require('es6-promise').Promise;
+var getDefer = function() {
+    var deferred = {};
+    deferred.promise = new Promise(function(resolve, reject) {
+        deferred.resolve = resolve;
+        deferred.reject = reject;
+    });
+    return deferred;
+};
 
 var HEALTH_STATE = [
     "OK",                                      // 0. HEALTH_OK
@@ -27,7 +36,7 @@ exports.init = function(opts) {
         opts.servers.forEach(function(s) {
             healthchecks_arr[s] = {
                 action_time: null,
-                concurrent: -1,
+                concurrent: 0,
                 down: false,
                 failcount: 0,
                 last_status: "",
@@ -60,7 +69,8 @@ function check() {
     var servers = Object.keys(healthchecks_arr);
     var opts = exports.opts;
 
-    servers.forEach(function(s) {
+    var promises = servers.map(function(s) {
+        var deferred = getDefer();
         var time = new Date();
         var hc = healthchecks_arr[s];
         if (!hc.since) hc.since = time;
@@ -104,11 +114,13 @@ function check() {
                         hc.failcount = 0;
                         hc.down = false;
                     }
+                    deferred.resolve(null);
                 });
             } else {
                 hc.last_status = HEALTH_STATE[6];
                 hc.failcount += 1;
                 if (hc.failcount >= opts.failcount) hc.down = true;
+                deferred.resolve(null);
             }
         });
 
@@ -120,6 +132,7 @@ function check() {
                 hc.last_status = HEALTH_STATE[7];
                 hc.failcount += 1;
                 if (hc.failcount >= opts.failcount) hc.down = true;
+                deferred.resolve(null);
             });
         });
 
@@ -128,7 +141,12 @@ function check() {
             hc.last_status = error.message;
             hc.failcount += 1;
             if (hc.failcount >= opts.failcount) hc.down = true;
+            deferred.resolve(null);
         });
+        return deferred.promise;
     });
-    if (typeof opts.logger === "function") opts.logger(healthchecks_arr);
+
+    Promise.all(promises).then(function(result) {
+        if (typeof opts.logger === "function") opts.logger(healthchecks_arr);
+    });
 }
