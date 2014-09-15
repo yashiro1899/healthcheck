@@ -160,3 +160,16 @@ HealthCheck.prototype.check = function() {
         if (typeof opts.logger === "function") opts.logger(this.healthchecks_arr);
     });
 };
+
+HealthCheck.prototype.is_down(name) {
+    var hc = healthchecks_arr[name];
+    if (hc) {
+        return hc.down;
+    } else {
+        return new Error("healthcheck: Invalid index to is_down: " + name);
+    }
+};
+
+HealthCheck.prototype.status = function() {
+    return this.healthchecks_arr;
+};
