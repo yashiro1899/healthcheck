@@ -24,22 +24,25 @@ var HEALTH_STATE = [
     "Connection closed early"                  // 9. HEALTH_EARLY_CLOSE
 ];
 
+var single;
 
-// exports.init = function(opts) {
-// };
+exports.init = function(opts) {
+    single = new Healthcheck(opts);
+    return single;
+};
 
-// exports.is_down = function(name) {
-//     var hc = healthchecks_arr[name];
-//     if (hc) {
-//         return hc.down;
-//     } else {
-//         return new Error("healthcheck: Invalid index to is_down: " + name);
-//     }
-// };
+exports.is_down = function(name) {
+    var hc = single ? single.healthchecks_arr[name] : null;
+    if (hc) {
+        return hc.down;
+    } else {
+        return new Error("healthcheck: Invalid index to is_down: " + name);
+    }
+};
 
-// exports.status = function() {
-//     return healthchecks_arr;
-// };
+exports.status = function() {
+    return single ? single.healthchecks_arr : {};
+};
 
 
 exports.HealthCheck = HealthCheck;
