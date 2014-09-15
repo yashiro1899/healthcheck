@@ -27,8 +27,12 @@ var HEALTH_STATE = [
 var single;
 
 exports.init = function(opts) {
-    single = new Healthcheck(opts);
-    return single;
+    if (single) {
+        return single;
+    } else {
+        single = new HealthCheck(opts);
+        return single;
+    }
 };
 
 exports.is_down = function(name) {
