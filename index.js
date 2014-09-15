@@ -45,6 +45,7 @@ var HEALTH_STATE = [
 exports.HealthCheck = HealthCheck;
 
 function HealthCheck(opts) {
+    var self = this;
     this.healthchecks_arr = {};
 
     if (opts && opts.servers && opts.servers.length > 0) {
@@ -53,7 +54,7 @@ function HealthCheck(opts) {
         if (opts.timeout === undefined) opts.timeout = 2000;
 
         opts.servers.forEach(function(s) {
-            this.healthchecks_arr[s] = {
+            self.healthchecks_arr[s] = {
                 action_time: null,
                 concurrent: 0,
                 down: false,
@@ -67,20 +68,21 @@ function HealthCheck(opts) {
         delete opts.servers;
         this.opts = opts;
         this.check();
-        setInterval(this.check, opts.delay);
-    } else {
-        opts = null;
+        setInterval(function() {
+            self.check();
+        }, opts.delay);
     }
 }
 
 HealthCheck.prototype.check = function() {
     var servers = Object.keys(this.healthchecks_arr);
     var opts = this.opts;
+    var self = this;
 
     var promises = servers.map(function(s) {
         var deferred = getDefer();
         var time = new Date();
-        var hc = this.healthchecks_arr[s];
+        var hc = self.healthchecks_arr[s];
         if (!hc.since) hc.since = time;
         hc.action_time = time;
 
@@ -157,12 +159,12 @@ HealthCheck.prototype.check = function() {
         result.forEach(function(hc) {
             hc.concurrent += 1;
         });
-        if (typeof opts.logger === "function") opts.logger(this.healthchecks_arr);
+        if (typeof opts.logger === "function") opts.logger(self.healthchecks_arr);
     });
 };
 
-HealthCheck.prototype.is_down(name) {
-    var hc = healthchecks_arr[name];
+HealthCheck.prototype.is_down = function(name) {
+    var hc = this.healthchecks_arr[name];
     if (hc) {
         return hc.down;
     } else {

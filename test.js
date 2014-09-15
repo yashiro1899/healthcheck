@@ -1,8 +1,8 @@
 var dateformat = require('dateformat');
-var healthcheck = require("./");
+var HealthCheck = require("./").HealthCheck;
 var Table = require('cli-table');
 
-healthcheck.init({
+new HealthCheck({
     servers: [
         'user.qunar.com',
         'localhost:3000'
