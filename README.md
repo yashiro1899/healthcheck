@@ -18,10 +18,10 @@ Options:
 Example:
 
     var dateformat = require('dateformat');
-    var healthcheck = require("healthcheck");
+    var HealthCheck = require("./").HealthCheck;
     var Table = require('cli-table');
 
-    healthcheck.init({
+    var instance = new HealthCheck({
         servers: [
             'localhost:3000',
             'localhost:3001'
@@ -49,7 +49,7 @@ Example:
     });
 
 
-## healthcheck.status()
+## instance.status()
 
 The `status()` method health status.
 
@@ -85,10 +85,10 @@ Example:
 * **failcount**: Number of concurrent bad responses.
 
 
-## healthcheck.is_down(name)
+## instance.is_down(name)
 
 Return `true` if the given server has failed its healthcheck.
 
 Example:
 
-    healthcheck.is_down("localhost:3000");
+    instance.is_down("localhost:3000");
